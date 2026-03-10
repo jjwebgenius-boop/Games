@@ -1,0 +1,5 @@
+{
+  "name": "MundoFreeGames",
+  "description": "Una plataforma para descubrir los mejores juegos gratuitos (Free-to-Play) utilizando la API de FreeToGame.",
+  "requestFramePermissions": []
+}

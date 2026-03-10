@@ -1,0 +1,60 @@
+EXPLICACIÓN DETALLADA DEL PROYECTO: MUNDOFREEGAMES
+
+Este documento detalla el funcionamiento paso a paso de la aplicación, explicando la responsabilidad de cada archivo y cómo se integran las funcionalidades solicitadas.
+
+1. ESTRUCTURA DE ARCHIVOS (Nombres en Español)
+--------------------------------------------------
+- src/servicios/juegosApi.ts: 
+  Contiene toda la lógica de comunicación con la API. Ahora utiliza un proxy local ('/api/proxy') para evitar problemas de CORS que bloqueaban las peticiones directas desde el navegador.
+
+- server.ts (NUEVO):
+  Servidor Express que actúa como proxy. Recibe las peticiones del frontend y las redirige a la API de FreeToGame, permitiendo que los datos carguen correctamente en el entorno del navegador.
+
+- src/paginas/Inicio.tsx:
+  Es la página principal. Se encarga de:
+  - Gestionar el estado de los juegos y los filtros.
+  - Realizar la petición inicial de datos al montar el componente.
+  - Implementar la lógica de búsqueda local sobre los resultados obtenidos.
+  - Mostrar estados de carga (Loading) y manejo de errores si la API falla.
+
+- src/paginas/DetallesJuego.tsx:
+  Página de detalles que utiliza rutas dinámicas (/:id). 
+  - Extrae el ID de la URL usando 'useParams'.
+  - Realiza una petición específica para obtener los detalles completos de un juego.
+  - Muestra información extendida: requisitos del sistema, capturas de pantalla, enlaces externos, etc.
+
+- src/paginas/NoEncontrado.tsx:
+  Componente para manejar errores 404. Si el usuario ingresa a una ruta inexistente, se le presenta una interfaz amigable con opción de volver al inicio.
+
+- src/componentes/TarjetaJuego.tsx:
+  Componente reutilizable que representa un juego en la lista. Incluye animaciones de entrada y hover usando 'motion'.
+
+- src/componentes/Filtros.tsx:
+  Componente que agrupa los controles de filtrado (Plataforma, Categoría, Orden y Búsqueda). Centraliza la interacción del usuario para refinar el catálogo.
+
+2. FUNCIONALIDADES CLAVE
+--------------------------------------------------
+- Peticiones REST Asíncronas:
+  Implementadas en 'juegosApi.ts'. Se manejan errores mediante bloques try/catch y se verifica el estado de la respuesta (response.ok).
+
+- Navegación y Rutas Dinámicas:
+  Configuradas en 'App.tsx' usando 'react-router-dom'. Permite una experiencia de Single Page Application (SPA) sin recargas de página.
+
+- Optimización de Rendimiento:
+  - Uso de 'useMemo' para el filtrado de búsqueda, evitando cálculos innecesarios en cada renderizado.
+  - Implementación de 'AnimatePresence' para transiciones suaves de elementos.
+  - Carga condicional de componentes y manejo eficiente del estado con 'useState' y 'useEffect'.
+
+- Diseño Responsive y UI:
+  Utiliza Tailwind CSS con un enfoque "Mobile First". La interfaz es oscura (Dark Mode) con acentos en verde esmeralda, inspirada en plataformas de gaming modernas. Se incluyen iconos de Lucide para mejorar la experiencia visual.
+
+- Manejo de Errores:
+  Se han incluido validaciones en cada petición. Si la API no responde o el juego no existe, el usuario recibe un mensaje claro y una opción para reintentar o navegar de vuelta.
+
+3. CÓMO FUNCIONA EL FLUJO DE DATOS
+--------------------------------------------------
+1. El usuario entra a la página. 'Inicio.tsx' llama a 'obtenerJuegos'.
+2. Los datos viajan desde la API -> Servicio -> Estado de React.
+3. El usuario aplica un filtro. El 'useEffect' detecta el cambio y vuelve a pedir datos a la API con los nuevos parámetros (platform, category, etc.).
+4. El usuario hace clic en "Ver más". React Router lo lleva a '/juego/ID'.
+5. 'DetallesJuego.tsx' pide los datos específicos de ese ID y los renderiza.

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "tsx server.ts --production",
+    "start": "tsx server.ts --production",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },

@@ -34,6 +34,14 @@ Este proyecto es una aplicaciÃ³n web moderna construida con **React** y **Vite
 
 Esto sirve `dist` y mantiene disponible el proxy en `/api/proxy/*`.
 
+## Deploy en Netlify
+
+Este repo ya incluye:
+- `netlify.toml` con `publish = "dist"` y redirects.
+- `netlify/functions/proxy.cjs` para manejar `/api/proxy/*` en produccion.
+
+En Netlify solo necesitas conectar el repo. La API no se guarda en `dist`; se ejecuta como funcion serverless.
+
 ## TecnologÃ­as Utilizadas
 
 - **React 19**: Biblioteca principal para la interfaz.

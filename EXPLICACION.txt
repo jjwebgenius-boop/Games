@@ -58,3 +58,50 @@ Este documento detalla el funcionamiento paso a paso de la aplicación, explican
 3. El usuario aplica un filtro. El 'useEffect' detecta el cambio y vuelve a pedir datos a la API con los nuevos parámetros (platform, category, etc.).
 4. El usuario hace clic en "Ver más". React Router lo lleva a '/juego/ID'.
 5. 'DetallesJuego.tsx' pide los datos específicos de ese ID y los renderiza.
+
+4. CAMBIOS RECIENTES PARA PRODUCCION Y NETLIFY
+--------------------------------------------------
+- Problema detectado:
+  Al publicar solo la carpeta 'dist', la app frontend cargaba pero las rutas '/api/proxy/*' no existian, porque ese proxy estaba en 'server.ts' (Node/Express) y Netlify no ejecuta ese servidor cuando publica estatico.
+
+- Solucion aplicada:
+  Se implemento un proxy serverless para Netlify y se agrego configuracion de redirects para que el frontend siga usando la misma ruta '/api/proxy/*' sin cambiar el codigo de React.
+
+- Archivos nuevos:
+  - netlify.toml:
+    Configura el deploy de Netlify:
+    1) build command: 'npm run build'
+    2) publish directory: 'dist'
+    3) functions directory: 'netlify/functions'
+    4) redirect de '/api/proxy/*' hacia '/.netlify/functions/proxy/:splat'
+    5) fallback SPA de '/*' hacia '/index.html'
+
+  - netlify/functions/proxy.cjs:
+    Funcion serverless que:
+    1) Lee la ruta solicitada (ejemplo: '/api/proxy/games')
+    2) Extrae el tramo real de FreeToGame (ejemplo: 'games')
+    3) Conserva query params (ejemplo: '?platform=pc')
+    4) Hace fetch a 'https://www.freetogame.com/api/...'
+    5) Devuelve el mismo status y content-type al cliente
+    6) Maneja errores con status 500 y mensaje JSON
+
+- Archivos modificados:
+  - package.json:
+    - 'preview' y 'start' ahora ejecutan 'tsx server.ts --production' para pruebas locales de produccion con proxy activo.
+    - 'build' sigue generando solo frontend con Vite.
+
+  - server.ts:
+    - Se agrego deteccion de modo produccion por 'NODE_ENV=production' o flag '--production'.
+    - Se agrego soporte de variable 'PORT'.
+    - Se mejoro la resolucion de carpeta 'dist' para evitar fallos por ruta.
+    - Mantiene el proxy '/api/proxy/*' para entorno local/Node.
+
+- Flujo final en Netlify:
+  1) Netlify construye el proyecto y publica 'dist'.
+  2) El navegador hace fetch a '/api/proxy/games?...' (igual que en desarrollo).
+  3) El redirect envia esa ruta a la funcion 'proxy.cjs'.
+  4) La funcion consulta FreeToGame y responde JSON al frontend.
+  5) Resultado: funciona igual que local, pero sin depender de Express en la nube.
+
+- Beneficio clave:
+  Se conserva una unica URL de API en frontend ('/api/proxy'), evitando condicionales por entorno y evitando errores CORS.

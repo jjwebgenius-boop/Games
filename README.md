@@ -42,6 +42,24 @@ Este repo ya incluye:
 
 En Netlify solo necesitas conectar el repo. La API no se guarda en `dist`; se ejecuta como funcion serverless.
 
+### Que hace cada cambio
+
+- `netlify.toml`:
+  - Define build (`npm run build`) y salida (`dist`).
+  - Activa funciones en `netlify/functions`.
+  - Redirige `/api/proxy/*` a `/.netlify/functions/proxy/:splat`.
+  - Mantiene fallback SPA (`/* -> /index.html`).
+
+- `netlify/functions/proxy.cjs`:
+  - Recibe rutas como `/api/proxy/games?platform=pc`.
+  - Reenvia a `https://www.freetogame.com/api/games?platform=pc`.
+  - Devuelve el `status` y `content-type` originales.
+  - Si falla, responde `500` con JSON de error.
+
+- `server.ts` y `package.json` (local):
+  - `npm run preview` / `npm run start` ejecutan Express en modo produccion.
+  - Sirve `dist` y tambien habilita `/api/proxy/*` en pruebas locales.
+
 ## TecnologÃ­as Utilizadas
 
 - **React 19**: Biblioteca principal para la interfaz.

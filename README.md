@@ -1,72 +1,82 @@
-﻿# MundoFreeGames - CatÃ¡logo de Juegos Gratuitos
+# MundoFreeGames - Catalogo de Juegos Gratuitos
 
-Este proyecto es una aplicaciÃ³n web moderna construida con **React** y **Vite**, que consume la API de **FreeToGame** para mostrar un catÃ¡logo completo de juegos gratuitos.
+Aplicacion web construida con **React + Vite** que consume la API de **FreeToGame** para mostrar un catalogo de videojuegos free-to-play.
 
 ## Requisitos Previos
 
-- Node.js (versiÃ³n 18 o superior)
-- npm o yarn
+- Node.js (version 18 o superior)
+- npm
 
-## InstalaciÃ³n y EjecuciÃ³n
+## Instalacion y Ejecucion
 
-1. Instala las dependencias:
+1. Instala dependencias:
    ```bash
    npm install
    ```
-
-2. Inicia el servidor de desarrollo:
+2. Levanta el proyecto en desarrollo:
    ```bash
    npm run dev
    ```
+3. Abre `http://localhost:3000`.
 
-3. Abre tu navegador en `http://localhost:3000`.
+## Produccion local (con proxy activo)
 
-## Produccion local (con proxy API activo)
-
-1. Construye el frontend:
+1. Construye frontend:
    ```bash
    npm run build
    ```
-2. Levanta el servidor Express en modo produccion:
+2. Ejecuta servidor Express de produccion:
    ```bash
    npm run preview
    ```
 
-Esto sirve `dist` y mantiene disponible el proxy en `/api/proxy/*`.
+## Login, Token y Estado Global Persistente
+
+Se agrego autenticacion simulada con validacion de credenciales, generacion de token y persistencia de sesion:
+
+- Pantalla de login en `/login`.
+- Validacion de credenciales demo contra servicio simulado.
+- Creacion de token de sesion (simulando respuesta del servidor).
+- Estado global con `AuthContext` y persistencia en `localStorage`.
+- Redireccion automatica al catalogo al iniciar sesion.
+- Cierre de sesion desde el catalogo.
+- Ajustes responsive en login y botones de cierre de sesion.
+
+### Credenciales demo
+
+- `estudiante@mundofreegames.com` / `123456`
+- `profesor@mundofreegames.com` / `123456`
+
+## Proteccion de Rutas
+
+Las rutas del catalogo quedaron privadas y protegidas:
+
+- `/` (catalogo) -> requiere sesion.
+- `/juego/:id` (detalle) -> requiere sesion.
+- Si no hay token/sesion, redirige a `/login`.
+
+## Responsive de la Implementacion Nueva
+
+Se ajusto la parte nueva para correcta visualizacion en moviles y tablets:
+
+- `Login`: padding adaptable (`p-6` a `sm:p-8`) y titulo escalable.
+- `Inicio`: boton `Cerrar sesion` centrado en movil y alineado a la derecha en pantallas grandes.
+- `Detalles`: boton `Cerrar sesion` en layout vertical para movil (`w-full`) y horizontal para escritorio (`sm:w-auto`).
 
 ## Deploy en Netlify
 
 Este repo ya incluye:
+
 - `netlify.toml` con `publish = "dist"` y redirects.
 - `netlify/functions/proxy.cjs` para manejar `/api/proxy/*` en produccion.
 
-En Netlify solo necesitas conectar el repo. La API no se guarda en `dist`; se ejecuta como funcion serverless.
+## Tecnologias Utilizadas
 
-### Que hace cada cambio
-
-- `netlify.toml`:
-  - Define build (`npm run build`) y salida (`dist`).
-  - Activa funciones en `netlify/functions`.
-  - Redirige `/api/proxy/*` a `/.netlify/functions/proxy/:splat`.
-  - Mantiene fallback SPA (`/* -> /index.html`).
-
-- `netlify/functions/proxy.cjs`:
-  - Recibe rutas como `/api/proxy/games?platform=pc`.
-  - Reenvia a `https://www.freetogame.com/api/games?platform=pc`.
-  - Devuelve el `status` y `content-type` originales.
-  - Si falla, responde `500` con JSON de error.
-
-- `server.ts` y `package.json` (local):
-  - `npm run preview` / `npm run start` ejecutan Express en modo produccion.
-  - Sirve `dist` y tambien habilita `/api/proxy/*` en pruebas locales.
-
-## TecnologÃ­as Utilizadas
-
-- **React 19**: Biblioteca principal para la interfaz.
-- **Vite**: Herramienta de construcciÃ³n rÃ¡pida.
-- **Tailwind CSS**: Estilizado mediante utilidades.
-- **React Router Dom**: GestiÃ³n de navegaciÃ³n y rutas dinÃ¡micas.
-- **Lucide React**: Set de iconos consistentes.
-- **Motion**: Animaciones fluidas y transiciones.
-- **API FreeToGame**: Fuente de datos de juegos.
-# Games
+- React 19
+- Vite
+- Tailwind CSS
+- React Router DOM
+- Context API (estado global)
+- Lucide React
+- Motion
+- API FreeToGame

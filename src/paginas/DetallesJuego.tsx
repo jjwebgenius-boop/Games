@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { obtenerDetallesJuego, DetallesJuego } from '../servicios/juegosApi';
 import { motion } from 'motion/react';
+import { useAuth } from '../contexto/AuthContexto';
 import { 
   ArrowLeft, 
   ExternalLink, 
@@ -18,7 +19,8 @@ import {
   Building2,
   Loader2,
   AlertCircle,
-  ChevronRight
+  ChevronRight,
+  LogOut
 } from 'lucide-react';
 
 /**
@@ -30,6 +32,7 @@ export default function DetallesJuegoPagina() {
   // Obtiene el ID del juego de los parámetros de la URL
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { cerrarSesion } = useAuth();
   // Estado para la información detallada del juego
   const [juego, setJuego] = useState<DetallesJuego | null>(null);
   // Estado de carga
@@ -96,10 +99,19 @@ export default function DetallesJuegoPagina() {
         
         <div className="absolute bottom-0 left-0 w-full z-20 pb-8 md:pb-12">
           <div className="container mx-auto px-4">
-            <Link to="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white mb-6 md:mb-8 transition-colors group">
-              <ArrowLeft size={20} className="transition-transform group-hover:-translate-x-1" />
-              Volver al catálogo
-            </Link>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6 md:mb-8">
+              <Link to="/" className="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors group">
+                <ArrowLeft size={20} className="transition-transform group-hover:-translate-x-1" />
+                Volver al catálogo
+              </Link>
+              <button
+                onClick={cerrarSesion}
+                className="inline-flex w-full sm:w-auto justify-center items-center gap-2 bg-zinc-900/80 border border-zinc-700 text-zinc-200 hover:text-white hover:border-zinc-500 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all"
+              >
+                <LogOut size={14} />
+                Cerrar sesión
+              </button>
+            </div>
             
             <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-end">
               <img 
@@ -273,3 +285,7 @@ export default function DetallesJuegoPagina() {
     </div>
   );
 }
+
+
+
+

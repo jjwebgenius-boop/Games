@@ -23,11 +23,11 @@ export default function NoEncontrado() {
         Parece que el nivel que buscas no existe o ha sido eliminado. ¡Vuelve al inicio para seguir explorando!
       </p>
       <Link 
-        to="/" 
+        to="/login" 
         className="bg-emerald-600 hover:bg-emerald-500 text-white px-10 py-4 rounded-2xl font-black text-lg transition-all flex items-center gap-3 shadow-[0_0_30px_rgba(16,185,129,0.2)]"
       >
         <Home size={20} />
-        VOLVER AL INICIO
+        IR AL LOGIN
       </Link>
     </div>
   );

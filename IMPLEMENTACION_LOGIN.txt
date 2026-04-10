@@ -1,0 +1,137 @@
+IMPLEMENTACION NUEVA - LOGIN, PROTECCION DE RUTAS Y ESTADO GLOBAL PERSISTENTE
+Proyecto: MundoFreeGames
+
+Resumen de lo realizado
+Se implemento una autenticacion simulada para el catalogo de videojuegos con:
+1) pantalla de login,
+2) validacion de credenciales,
+3) simulacion de respuesta de servidor con token,
+4) almacenamiento de sesion y token en estado global,
+5) persistencia de sesion,
+6) proteccion de rutas,
+7) redireccion automatica al catalogo despues del login.
+
+--------------------------------------------------
+1. Pantalla de Login
+--------------------------------------------------
+Archivo principal: src/paginas/Login.tsx
+
+- Se creo una interfaz de login integrada al estilo existente (fondo negro, acentos emerald, componentes con border/zinc).
+- Campos:
+  - correo
+  - contrasena
+- Incluye validaciones basicas de formulario.
+- Muestra estado de carga mientras "valida" credenciales.
+- Si el login es correcto, redirige al catalogo.
+- Si las credenciales no son validas, muestra mensaje de error.
+
+Credenciales demo usadas para la simulacion:
+- estudiante@mundofreegames.com / 123456
+- profesor@mundofreegames.com / 123456
+
+--------------------------------------------------
+2. Simulacion de autenticacion con servidor + token
+--------------------------------------------------
+Archivo principal: src/servicios/autenticacion.ts
+
+- Se creo una funcion asincrona `simularAutenticacion(...)`.
+- Esta funcion:
+  - simula latencia de red,
+  - valida las credenciales demo,
+  - genera un token unico (simulando backend),
+  - devuelve `token` + datos de `sesion`.
+
+Con esto se cumple la parte de "simular autenticacion con servidor creando token".
+
+--------------------------------------------------
+3. Estado global persistente (sesion + token)
+--------------------------------------------------
+Archivo principal: src/contexto/AuthContexto.tsx
+
+- Se implemento Context API como estado global de autenticacion.
+- El contexto expone:
+  - `token`
+  - `sesion`
+  - `estaAutenticado`
+  - `iniciandoSesion`
+  - `iniciarSesion(...)`
+  - `cerrarSesion()`
+- Persistencia:
+  - se guarda la sesion en `localStorage` con llave `mundofreegames.auth`.
+  - al recargar la pagina, el estado se rehidrata automaticamente.
+
+Con esto se cumple el criterio de manejo de estado global persistente.
+
+--------------------------------------------------
+4. Proteccion de rutas
+--------------------------------------------------
+Archivo principal: src/componentes/RutaProtegida.tsx
+Integracion en rutas: src/App.tsx
+
+- Se creo `RutaProtegida` usando `Navigate` + `Outlet`.
+- Si no existe sesion/token valido:
+  - redirige a `/login`.
+- Rutas protegidas:
+  - `/` (catalogo)
+  - `/juego/:id` (detalle del juego)
+- Ruta publica:
+  - `/login`
+
+Con esto se cumple el criterio de proteccion de rutas.
+
+--------------------------------------------------
+5. Integracion general en la app
+--------------------------------------------------
+Archivos:
+- src/main.tsx
+- src/App.tsx
+- src/paginas/Inicio.tsx
+- src/paginas/NoEncontrado.tsx
+
+Cambios clave:
+- En `main.tsx` se envolvio la app con `AuthProveedor`.
+- En `App.tsx` se agrego ruta `/login` y wrapper de rutas privadas.
+- En `Inicio.tsx` se agrego boton "Cerrar sesion" y muestra de usuario activo.
+- En `NoEncontrado.tsx` se actualizo acceso para llevar al login.
+
+--------------------------------------------------
+6. Coherencia visual (colores y estilo)
+--------------------------------------------------
+Se mantuvo el mismo lenguaje visual ya existente:
+- fondo oscuro (`bg-black`, `zinc-*`),
+- acento verde (`emerald-*`),
+- bordes, sombras y tipografia en linea con pantallas previas,
+- animaciones compatibles con el estilo actual del proyecto.
+
+--------------------------------------------------
+7. Verificacion tecnica
+--------------------------------------------------
+- Validacion de TypeScript ejecutada con exito (`npm run lint` -> `tsc --noEmit`).
+- Build de produccion ejecutado con exito (`npm run build`).
+
+--------------------------------------------------
+8. Ajustes Responsive de la implementacion nueva
+--------------------------------------------------
+Se mejoro la experiencia en movil y tablet para lo que se agrego en esta entrega:
+- Login:
+  - Se ajustaron paddings y tipografia para evitar saturacion en pantallas pequenas.
+- Boton "Cerrar sesion" en catalogo (Inicio):
+  - En movil se muestra centrado y con ancho completo para mejor toque tactil.
+  - En escritorio se mantiene alineado a la derecha.
+- Boton "Cerrar sesion" en detalles:
+  - En movil pasa a layout vertical junto al enlace de regreso.
+  - El boton ocupa ancho completo en movil y ancho natural en escritorio.
+
+Resultado:
+- Flujo de autenticacion usable en desktop, tablet y movil.
+- Coherencia visual mantenida con el estilo original del proyecto (fondo oscuro + acentos emerald).
+
+--------------------------------------------------
+Conclusion para calificacion
+--------------------------------------------------
+Se cumplieron los puntos solicitados:
+- Proteccion de rutas: IMPLEMENTADO.
+- Manejo de estado global persistente: IMPLEMENTADO.
+- Login con validacion de credenciales y token simulado: IMPLEMENTADO.
+- Redireccion al catalogo tras iniciar sesion: IMPLEMENTADO.
+- Documentacion de cambios: IMPLEMENTADO (README + este archivo).
